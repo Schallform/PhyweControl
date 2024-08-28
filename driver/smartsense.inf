@@ -1,0 +1,115 @@
+;
+;
+; Installs WinUsb
+;
+
+[Version]
+Signature = "$Windows NT$"
+Class     = USBDevice
+ClassGUID = {88BAE032-5A81-49f0-BC3D-A4FF138216D6}
+Provider  = %ManufacturerName%
+CatalogFile = smartsense.cat
+DriverVer   = 01/17/2019, 6.1.7600.16385
+
+[Strings]
+ManufacturerName="Phywe Systeme GmbH & Co.KG"
+ClassName="Phywe Systeme"
+DeviceName1="Smart Sense Device 1"
+DeviceName2="Smart Sense Device 2"
+DeviceName3="Smart Sense Device 3"
+DeviceName4="Smart Sense Device 4"
+DiskName="measureLAB Install Disk"
+REG_MULTI_SZ = 0x00010000
+
+; ========== Manufacturer/Models sections ===========
+[Manufacturer]
+%VendorName% = libusbDevice_WinUSB,NTx86,NTamd64,NTarm
+
+[libusbDevice_WinUSB.NTx86]
+%DeviceName1% =USB_Install, USB\VID_4348&PID_5537
+%DeviceName2% =USB_Install, USB\VID_1915&PID_520F
+%DeviceName3% =USB_Install, USB\VID_811E&PID_8846
+%DeviceName3% =USB_Install, USB\VID_16C1&PID_C002
+
+[libusbDevice_WinUSB.NTamd64]
+%DeviceName1% =USB_Install, USB\VID_4348&PID_5537
+%DeviceName2% =USB_Install, USB\VID_1915&PID_520F
+%DeviceName3% =USB_Install, USB\VID_811E&PID_8846
+%DeviceName3% =USB_Install, USB\VID_16C1&PID_C002
+
+[libusbDevice_WinUSB.NTarm]
+%DeviceName1% =USB_Install, USB\VID_4348&PID_5537
+%DeviceName2% =USB_Install, USB\VID_1915&PID_520F
+%DeviceName3% =USB_Install, USB\VID_811E&PID_8846
+%DeviceName3% =USB_Install, USB\VID_16C1&PID_C002
+
+; ========== Class definition (for Windows 8 and ealier versions) ===========
+
+[ClassInstall32]
+AddReg = ClassInstall_AddReg
+
+[ClassInstall_AddReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-20
+
+; =================== Installation ===================
+
+[USB_Install]
+Include = winusb.inf
+Needs   = WINUSB.NT
+
+[USB_Install.Services]
+Include    = winusb.inf
+AddService = WinUSB,0x00000002,WinUSB_ServiceInstall
+
+[WinUSB_ServiceInstall]
+DisplayName   = "WinUSB - Kernel Driver 02/10/2017 6.1.7600.16385"
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %12%\WinUSB.sys
+
+[USB_Install.Wdf]
+KmdfService = WINUSB, WinUsb_Install
+
+[WinUSB_Install]
+KmdfLibraryVersion = 1.11
+
+[USB_Install.HW]
+AddReg = AddDeviceInterfaceGUID
+
+[NoDeviceInterfaceGUID]
+; Avoids adding a DeviceInterfaceGUID for generic driver
+
+[AddDeviceInterfaceGUID]
+HKR,,DeviceInterfaceGUIDs,0x10000,%DeviceGUID%
+
+[USB_Install.CoInstallers]
+AddReg    = CoInstallers_AddReg
+CopyFiles = CoInstallers_CopyFiles
+
+[CoInstallers_AddReg]
+HKR,,CoInstallers32,0x00010000,"WdfCoInstaller01011.dll,WdfCoInstaller","WinUSBCoInstaller2.dll"
+
+[CoInstallers_CopyFiles]
+WinUSBCoInstaller2.dll
+WdfCoInstaller01011.dll
+
+[DestinationDirs]
+CoInstallers_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %SourceName%
+
+[SourceDisksFiles.x86]
+WinUSBCoInstaller2.dll = 1,x86
+WdfCoInstaller01011.dll = 1,x86
+
+[SourceDisksFiles.amd64]
+WinUSBCoInstaller2.dll = 1,amd64
+WdfCoInstaller01011.dll = 1,amd64
+
+[SourceDisksFiles.arm]
+WinUSBCoInstaller2.dll = 1,arm
+WdfCoInstaller01011.dll = 1,arm
+
