@@ -143,3 +143,11 @@ class FunctionGenerator:
         :return: amplitude in V for power output, 100 mV for Headphones
         """
         return self.get_parameter(0x100, 0x06) / 1000
+
+
+if __name__ == "__main__":
+    fg = FunctionGenerator("COM7")  # initialize serial interface
+    fg.set_configuration(440, 3.5)  # change to an example setup
+    fg.set_mode(0)  # turn power output on
+    time.sleep(2)
+    fg.set_mode(1)  # turn power output off
