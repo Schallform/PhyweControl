@@ -17,6 +17,7 @@ class FunctionGenerator:
         Initialize the object for control of a Phywe function generator
         :param port: the COM port of the Phywe function generator
         """
+        self.port = port
         self.interface = serial.Serial(port, BAUD_RATE, timeout=1)
         self.interface.flushInput()
 
@@ -40,7 +41,10 @@ class FunctionGenerator:
                 print(self._receive().hex())
                 break
             except SerialException:
-                print("Trying again")
+                self.interface.close()
+                input("Restart the function generator, then press enter")
+                self.interface = serial.Serial(self.port, BAUD_RATE, timeout=1)
+                self.interface.flushInput()
                 failed_tries += 1
         if failed_tries >= tries:
             raise SerialException
