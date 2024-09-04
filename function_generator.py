@@ -42,7 +42,7 @@ class FunctionGenerator:
                 break
             except SerialException:
                 self.interface.close()
-                input("Restart the function generator, then press enter")
+                input("Restart the function generator, then press enter\a")
                 self.interface = serial.Serial(self.port, BAUD_RATE, timeout=1)
                 self.interface.flushInput()
                 failed_tries += 1
