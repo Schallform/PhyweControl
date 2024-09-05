@@ -1,4 +1,5 @@
 import time
+import logging
 
 import serial
 from serial.serialutil import SerialException
@@ -10,12 +11,21 @@ BAUD_RATE = 921600
 
 RETRIES = 2
 
+logging.basicConfig(
+    filename="function_generator.log",
+    encoding="utf-8",
+    filemode="a",
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.DEBUG,
+)
+
 
 class FunctionGenerator:
-    def __init__(self, port: str):
+    def __init__(self, port: str, log: bool = False):
         """
         Initialize the object for control of a Phywe function generator
         :param port: the COM port of the Phywe function generator
+        :param log: whether to log the communication
         """
         self.port = port
         self.interface = serial.Serial(port, BAUD_RATE, timeout=1)
@@ -31,6 +41,7 @@ class FunctionGenerator:
         frame = frame_bytes + address_bytes + data_bytes
         length = len(frame)
         frame = bytearray([length]) + frame
+        logging.debug(f"Tx: {(START_BYTE + frame + STOP_BYTE).hex()}")
         self.interface.write(START_BYTE + frame + STOP_BYTE)
 
     def _send_with_ack(self, frame_index, address, data, num_bytes, tries):
@@ -42,6 +53,7 @@ class FunctionGenerator:
                 break
             except SerialException:
                 self.interface.close()
+                logging.error("Failed to send data to function generator")
                 input("Restart the function generator, then press enter\a")
                 self.interface = serial.Serial(self.port, BAUD_RATE, timeout=1)
                 self.interface.flushInput()
@@ -56,6 +68,7 @@ class FunctionGenerator:
             response_data = self.interface.read(length + 1)[:-1]  # cutting off end byte
         except IndexError:
             raise SerialException
+        logging.debug(f"Rx: {response_header.hex() + response_data.hex()}")
         return response_data
 
     def set_parameter(self, address: int, parameter: int, value: int, num_bytes: int):
