@@ -1,5 +1,6 @@
 import time
 import logging
+from tabnanny import verbose
 
 import serial
 from serial.serialutil import SerialException
@@ -21,7 +22,7 @@ logging.basicConfig(
 
 
 class FunctionGenerator:
-    def __init__(self, port: str, log: bool = False):
+    def __init__(self, port: str, log: bool = False, verbose: bool = False):
         """
         Initialize the object for control of a Phywe function generator
         :param port: the COM port of the Phywe function generator
@@ -30,6 +31,8 @@ class FunctionGenerator:
         self.port = port
         self.interface = serial.Serial(port, BAUD_RATE, timeout=1)
         self.interface.flushInput()
+        self.verbose = verbose
+        self.log = log
 
     def __del__(self):
         self.interface.close()
@@ -41,7 +44,10 @@ class FunctionGenerator:
         frame = frame_bytes + address_bytes + data_bytes
         length = len(frame)
         frame = bytearray([length]) + frame
-        logging.debug(f"Tx: {(START_BYTE + frame + STOP_BYTE).hex()}")
+        if self.log:
+            logging.debug(f"Tx: {(START_BYTE + frame + STOP_BYTE).hex()}")
+        if self.verbose:
+            print(f"Tx: {(START_BYTE + frame + STOP_BYTE).hex()}")
         self.interface.write(START_BYTE + frame + STOP_BYTE)
 
     def _send_with_ack(self, frame_index, address, data, num_bytes, tries):
@@ -49,7 +55,9 @@ class FunctionGenerator:
         while failed_tries < tries:
             try:
                 self._send(frame_index, address, data, num_bytes)
-                print(self._receive().hex())
+                response = self._receive()
+                if self.verbose:
+                    print(response.hex())
                 break
             except SerialException:
                 self.interface.close()
@@ -68,7 +76,8 @@ class FunctionGenerator:
             response_data = self.interface.read(length + 1)[:-1]  # cutting off end byte
         except IndexError:
             raise SerialException
-        logging.debug(f"Rx: {response_header.hex() + response_data.hex()}")
+        if self.log:
+            logging.debug(f"Rx: {response_header.hex() + response_data.hex()}")
         return response_data
 
     def set_parameter(self, address: int, parameter: int, value: int, num_bytes: int):
