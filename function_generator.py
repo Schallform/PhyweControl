@@ -12,14 +12,6 @@ BAUD_RATE = 921600
 
 RETRIES = 2
 
-logging.basicConfig(
-    filename="function_generator.log",
-    encoding="utf-8",
-    filemode="a",
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    level=logging.DEBUG,
-)
-
 
 class FunctionGenerator:
     def __init__(self, port: str, log: bool = False, verbose: bool = False):
@@ -33,6 +25,15 @@ class FunctionGenerator:
         self.interface.flushInput()
         self.verbose = verbose
         self.log = log
+
+        if log:
+            logging.basicConfig(
+                filename="function_generator.log",
+                encoding="utf-8",
+                filemode="a",
+                format="%(asctime)s - %(levelname)s - %(message)s",
+                level=logging.DEBUG,
+            )
 
     def __del__(self):
         self.interface.close()
