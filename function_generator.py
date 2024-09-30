@@ -134,21 +134,30 @@ class FunctionGenerator:
         time.sleep(0.05)
         self.confirm()
 
-    def set_configuration(self, frequency: float, amplitude: float):
+    def set_offset(self, offset: float):
+        """
+        Set the offset of the output
+        :param offset: offset in V
+        """
+        self.set_parameter(0x100, 0x07, round(offset * 1000), 2)
+        time.sleep(0.05)
+        self.confirm()
+
+    def set_configuration(self, frequency: float, amplitude: float, offset: float = 0):
         """
         Set the output frequency and amplitude at once
         :param frequency: frequency in Hz
         :param amplitude: amplitude in V for power output, mV for Headphones
+        :param offset: offset in V
         """
         self.interface.flushInput()
         self.set_parameter(0x100, 0x05, round(frequency * 10), 4)
-        # print(self._receive().hex())
         time.sleep(0.2)
         self.set_parameter(0x100, 0x06, round(amplitude * 1000), 4)
-        # print(self._receive().hex())
+        time.sleep(0.2)
+        self.set_parameter(0x100, 0x07, round(offset * 1000), 2)
         time.sleep(0.2)
         self.confirm()
-        # print(self._receive().hex())
 
     def set_mode(self, mode: int):
         """
@@ -171,9 +180,54 @@ class FunctionGenerator:
         """
         return self.get_parameter(0x100, 0x06) / 1000
 
+    def set_shape(self, shape: str):
+        """
+        Set the output shape of the function generator
+        :param shape: output shape: "sine","triangle" or "square"
+        """
+        shape_dict = {
+            "sine": 0,
+            "triangle": 1,
+            "square": 2
+        }
+        self.set_parameter(0x100, 0x04, shape_dict[shape], 1)
+
+    def ramp_setup(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
+        """
+        Set up the function generator for a frequency ramp
+        :param start_freq: start frequency in Hz
+        :param end_freq: end frequency in Hz
+        :param step_time: time in seconds between steps
+        :param step: step size in Hz
+        :param repeat: whether to repeat the ramp
+        """
+        self.set_parameter(0x100, 0x08, round(start_freq * 10), 4)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x09, round(end_freq * 10), 4)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x0a, round(step_time * 1000), 4)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x0b, round(step * 10), 4)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x13, int(repeat), 1)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x04, 3, 1)
+
+    def ramp_start(self):
+        """
+        Start the frequency ramp
+        """
+        self._send_with_ack(0x51, 0x100, 0, 0, RETRIES)
+
+    def ramp_stop(self):
+        """
+        Stop the frequency ramp
+        """
+        self._send_with_ack(0x52, 0x100, 0, 0, RETRIES)
+
 
 if __name__ == "__main__":
-    fg = FunctionGenerator("COM7")  # initialize serial interface
+    fg = FunctionGenerator("/dev/ttyUSB0")  # initialize serial interface
     fg.set_configuration(440, 3.5)  # change to an example setup
     fg.set_mode(0)  # turn power output on
     time.sleep(2)
