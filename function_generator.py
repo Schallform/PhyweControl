@@ -110,12 +110,6 @@ class FunctionGenerator:
         response = self._receive()[4:]
         return int.from_bytes(response, "little")
 
-    def get_measurement(self):
-        self.interface.flushInput()
-        self._send(0x01, 0x100, 0, 0)
-        response = self._receive()[5:]
-        return int.from_bytes(response, "little")
-
     def set_frequency(self, frequency: float):
         """
         Set the frequency of the output
