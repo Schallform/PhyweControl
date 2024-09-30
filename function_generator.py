@@ -1,7 +1,5 @@
 import time
 import logging
-from tabnanny import verbose
-
 import serial
 from serial.serialutil import SerialException
 
