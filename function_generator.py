@@ -217,6 +217,12 @@ class FunctionGenerator:
         """
         self._send_with_ack(0x52, 0x100, 0, 0, RETRIES)
 
+    def ramp_duration(self):
+        """
+        Get the duration of the frequency ramp
+        """
+        return self.get_parameter(0x100, 0x11) / 1000
+
 
 if __name__ == "__main__":
     fg = FunctionGenerator("/dev/functionGenerator")  # initialize serial interface
