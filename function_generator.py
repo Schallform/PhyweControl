@@ -219,7 +219,7 @@ class FunctionGenerator:
 
 
 if __name__ == "__main__":
-    fg = FunctionGenerator("/dev/ttyUSB0")  # initialize serial interface
+    fg = FunctionGenerator("/dev/functionGenerator")  # initialize serial interface
     fg.set_configuration(440, 3.5)  # change to an example setup
     fg.set_mode(0)  # turn power output on
     time.sleep(2)
