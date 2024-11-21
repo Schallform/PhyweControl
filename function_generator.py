@@ -2,6 +2,7 @@ import time
 import logging
 import serial
 from serial.serialutil import SerialException
+from typing_extensions import deprecated
 
 START_BYTE = bytearray([0x7D])
 STOP_BYTE = bytearray([0x7E])
@@ -23,6 +24,7 @@ class FunctionGenerator:
         self.interface.flushInput()
         self.verbose = verbose
         self.log = log
+        self.send_timestamp = time.time()
 
         if log:
             logging.basicConfig(
@@ -34,9 +36,15 @@ class FunctionGenerator:
             )
 
     def __del__(self):
-        self.interface.close()
+        self.release()
+
+    def release(self):
+        if self.interface.is_open:
+            self.interface.close()
 
     def _send(self, frame_index, address, data, num_bytes):
+        # wait until at least 0.2 seconds have passed since the last send
+        time.sleep(max(0.0, 0.2 - (time.time() - self.send_timestamp)))
         data_bytes = data.to_bytes(num_bytes, "little")
         address_bytes = address.to_bytes(2, "little")
         frame_bytes = frame_index.to_bytes(1, "little")
@@ -48,6 +56,7 @@ class FunctionGenerator:
         if self.verbose:
             print(f"Tx: {(START_BYTE + frame + STOP_BYTE).hex()}")
         self.interface.write(START_BYTE + frame + STOP_BYTE)
+        self.send_timestamp = time.time()
 
     def _send_with_ack(self, frame_index, address, data, num_bytes, tries):
         failed_tries = 0
@@ -151,12 +160,20 @@ class FunctionGenerator:
         time.sleep(0.2)
         self.confirm()
 
+    @deprecated("Use set_output_state instead")
     def set_mode(self, mode: int):
         """
         Set the output mode of the function generator
         :param mode: output mode: 0 - power output, 1 - headphones
         """
         self.set_parameter(0x100, 0x03, mode, 1)
+
+    def set_output_state(self, state: bool):
+        """
+        Set the output state of the function generator
+        :param state: output state: True - on, False - off
+        """
+        self.set_parameter(0x100, 0x03, int(not state), 1)
 
     def get_frequency(self):
         """
@@ -183,6 +200,18 @@ class FunctionGenerator:
             "square": 2
         }
         self.set_parameter(0x100, 0x04, shape_dict[shape], 1)
+
+    def pulse(self, frequency: float, amplitude: float, duration: float):
+        """
+        Set the function generator to a specific configuration for a given duration
+        :param frequency: frequency to set the function generator to
+        :param amplitude: amplitude to set the function generator to
+        :param duration: duration of the pulse
+        """
+        self.set_configuration(frequency, amplitude)
+        self.set_output_state(True)
+        time.sleep(duration)
+        self.set_output_state(False)
 
     def ramp_setup(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
         """
