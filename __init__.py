@@ -1,1 +1,1 @@
-from .function_generator import FunctionGenerator
+from .function_generator_phywe import FunctionGenerator_Phywe
