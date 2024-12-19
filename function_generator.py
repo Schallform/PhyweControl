@@ -1,11 +1,13 @@
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 
 
 class FunctionGenerator(ABC):
     """
     Abstract function generator class
     """
+
     @abstractmethod
     def release(self):
         """
@@ -14,7 +16,7 @@ class FunctionGenerator(ABC):
         pass
 
     @abstractmethod
-    def set_frequency(self, frequency: float, channel: int = 1):
+    def _set_frequency(self, frequency: float, channel: int = 1):
         """
         Set the frequency of the output
         :param frequency: frequency in Hz
@@ -22,8 +24,20 @@ class FunctionGenerator(ABC):
         """
         pass
 
+    def set_frequency(self, frequency: float | Iterable[float], channel: int = 1):
+        """
+        Set the frequency of the output
+        :param frequency: frequency in Hz
+        :param channel: output channel. This parameter is ignored if frequency is an iterable
+        """
+        try:
+            for i in range(len(frequency)):
+                self._set_frequency(frequency[i], i + 1)
+        except TypeError:
+            self._set_frequency(frequency, channel)
+
     @abstractmethod
-    def set_amplitude(self, amplitude: float, channel: int = 1):
+    def _set_amplitude(self, amplitude: float, channel: int = 1):
         """
         Set the amplitude of the output
         :param amplitude: amplitude in V
@@ -31,8 +45,20 @@ class FunctionGenerator(ABC):
         """
         pass
 
+    def set_amplitude(self, amplitude: float | Iterable[float], channel: int = 1):
+        """
+        Set the amplitude of the output
+        :param amplitude: amplitude in V
+        :param channel: output channel. This parameter is ignored if amplitude is an iterable
+        """
+        try:
+            for i in range(len(amplitude)):
+                self._set_amplitude(amplitude[i], i + 1)
+        except TypeError:
+            self._set_amplitude(amplitude, channel)
+
     @abstractmethod
-    def set_offset(self, offset: float, channel: int = 1):
+    def _set_offset(self, offset: float, channel: int = 1):
         """
         Set the offset of the output
         :param offset: offset in V
@@ -40,25 +66,50 @@ class FunctionGenerator(ABC):
         """
         pass
 
-    def set_configuration(self, frequency: float, amplitude: float, offset: float = 0, **kwargs):
+    def set_offset(self, offset: float | Iterable[float], channel: int = 1):
+        """
+        Set the offset of the output
+        :param offset: offset in V
+        :param channel: output channel. This parameter is ignored if offset is an iterable
+        """
+        try:
+            for i in range(len(offset)):
+                self._set_offset(offset[i], i + 1)
+        except TypeError:
+            self._set_offset(offset, channel)
+
+    def set_configuration(self, frequency: float | Iterable[float], amplitude: float | Iterable[float],
+                          offset: float | Iterable[float] = 0):
         """
         Set the output frequency and amplitude at once
         :param frequency: frequency in Hz
         :param amplitude: amplitude in V
         :param offset: offset in V
         """
-        self.set_frequency(frequency, **kwargs)
-        self.set_amplitude(amplitude, **kwargs)
-        self.set_offset(offset, **kwargs)
+        self.set_frequency(frequency)
+        self.set_amplitude(amplitude)
+        self.set_offset(offset)
 
     @abstractmethod
-    def set_output_state(self, state: bool, channel: int = 1):
+    def _set_output_state(self, state: bool, channel: int = 1):
         """
         Set the output state of the function generator
         :param state: whether the output is on
         :param channel: output channel, if applicable
         """
         pass
+
+    def set_output_state(self, state: bool | Iterable[bool], channel: int = 1):
+        """
+        Set the output state of the function generator
+        :param state: whether the output is on
+        :param channel: output channel. This parameter is ignored if state is an iterable
+        """
+        try:
+            for i in range(len(state)):
+                self._set_output_state(state[i], i + 1)
+        except TypeError:
+            self._set_output_state(state, channel)
 
     @abstractmethod
     def ramp_setup(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
@@ -93,21 +144,18 @@ class FunctionGenerator(ABC):
         """
         pass
 
-    def pulse(self, frequency1: float, amplitude1: float, duration: float, frequency2: float = None, amplitude2: float = None):
+    def pulse(self, frequency: float | Iterable[float], amplitude: float | Iterable[float], duration: float | Iterable[float]):
         """
         Set the function generator to a specific configuration for a given duration
-        :param frequency1: frequency to set channel 1 of the function generator to
-        :param amplitude1: amplitude to set channel 2 of the function generator to
+        :param frequency: frequency(ies) to set the function generator to
+        :param amplitude: amplitude(s) to set the function generator to
         :param duration: duration of the pulse
         """
-        secondChannel = frequency2 is not None and amplitude2 is not None
-        self.set_configuration(frequency1, amplitude1, channel=1)
-        if secondChannel:
-            self.set_configuration(frequency2, amplitude2, channel=2)
-        self.set_output_state(True, channel=1)
-        if secondChannel:
-            self.set_output_state(True, channel=2)
+        try:
+            channels = [True] * max(len(frequency), len(amplitude), len(duration))
+        except TypeError:
+            channels = [True]
+        self.set_configuration(frequency, amplitude)
+        self.set_output_state(channels)
         time.sleep(duration)
-        self.set_output_state(False, channel=1)
-        if secondChannel:
-            self.set_output_state(False, channel=2)
+        self.set_output_state([not c for c in channels])

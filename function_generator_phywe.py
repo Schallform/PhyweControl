@@ -118,7 +118,7 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         response = self._receive()[4:]
         return int.from_bytes(response, "little")
 
-    def set_frequency(self, frequency: float):
+    def _set_frequency(self, frequency: float):
         """
         Set the frequency of the output
         :param frequency: frequency in Hz
@@ -127,7 +127,7 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         time.sleep(0.05)
         self.confirm()
 
-    def set_amplitude(self, amplitude: float, **kwargs):
+    def _set_amplitude(self, amplitude: float, **kwargs):
         """
         Set the amplitude of the output
         :param amplitude: amplitude in V for power output, 100 mV for Headphones
@@ -139,7 +139,7 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         time.sleep(0.05)
         self.confirm()
 
-    def set_offset(self, offset: float, **kwargs):
+    def _set_offset(self, offset: float, **kwargs):
         """
         Set the offset of the output
         :param offset: offset in V
@@ -151,7 +151,7 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         time.sleep(0.05)
         self.confirm()
 
-    def set_output_state(self, state: bool, **kwargs):
+    def _set_output_state(self, state: bool, **kwargs):
         """
         Set the output state of the function generator
         :param state: output state: True - on, False - off
@@ -230,6 +230,6 @@ class FunctionGenerator_Phywe(FunctionGenerator):
 if __name__ == "__main__":
     fg = FunctionGenerator_Phywe("/dev/functionGenerator")  # initialize serial interface
     fg.set_configuration(440, 3.5)  # change to an example setup
-    fg.set_output_state(True)  # turn power output on
+    fg._set_output_state(True)  # turn power output on
     time.sleep(2)
-    fg.set_output_state(False)  # turn power output off
+    fg._set_output_state(False)  # turn power output off
