@@ -144,7 +144,7 @@ class FunctionGenerator(ABC):
         """
         pass
 
-    def pulse(self, frequency: float | Iterable[float], amplitude: float | Iterable[float], duration: float | Iterable[float]):
+    def pulse(self, frequency: float | Iterable[float], amplitude: float | Iterable[float], duration: float):
         """
         Set the function generator to a specific configuration for a given duration
         :param frequency: frequency(ies) to set the function generator to
@@ -152,7 +152,7 @@ class FunctionGenerator(ABC):
         :param duration: duration of the pulse
         """
         try:
-            channels = [True] * max(len(frequency), len(amplitude), len(duration))
+            channels = [True] * max(len(frequency), len(amplitude))
         except TypeError:
             channels = [True]
         self.set_configuration(frequency, amplitude)
