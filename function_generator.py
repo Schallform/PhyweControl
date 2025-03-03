@@ -159,3 +159,13 @@ class FunctionGenerator(ABC):
         self.set_output_state(channels)
         time.sleep(duration)
         self.set_output_state([not c for c in channels])
+
+    def pulse_channel(self, channel: int, duration: float):
+        """
+        Enable the specified channel for a given time without changing its configuration
+        :param channel: the channel to enable
+        :param duration: the duration of the pulse
+        """
+        self.set_output_state(True, channel)
+        time.sleep(duration)
+        self.set_output_state(False, channel)
