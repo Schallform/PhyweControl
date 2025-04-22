@@ -1,4 +1,4 @@
 import pytest
 
-def placeholder():
+def test_placeholder():
     pass
