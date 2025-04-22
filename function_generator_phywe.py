@@ -1,8 +1,10 @@
 import time
 import logging
+
 import serial
 from serial.serialutil import SerialException
-from typing_extensions import deprecated
+from enum import Enum
+
 from .function_generator import FunctionGenerator
 
 START_BYTE = bytearray([0x7D])
@@ -175,19 +177,21 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         """
         return self.get_parameter(0x100, 0x06) / 1000
 
-    def set_shape(self, shape: str):
+    class Shape(Enum):
+        SINE = 1
+        TRIANGLE = 2
+        SQUARE = 3
+        F_RAMP = 4
+        U_Ramp = 5
+
+    def set_shape(self, shape: Shape):
         """
         Set the output shape of the function generator
-        :param shape: output shape: "sine","triangle" or "square"
+        :param shape: output shape
         """
-        shape_dict = {
-            "sine": 0,
-            "triangle": 1,
-            "square": 2
-        }
-        self.set_parameter(0x100, 0x04, shape_dict[shape], 1)
+        self.set_parameter(0x100, 0x04, shape.value, 1)
 
-    def ramp_setup(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
+    def ramp_setup_f(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
         """
         Set up the function generator for a frequency ramp
         :param start_freq: start frequency in Hz
@@ -205,6 +209,27 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         self.set_parameter(0x100, 0x0b, round(step * 10), 4)
         time.sleep(0.1)
         self.set_parameter(0x100, 0x13, int(repeat), 1)
+        time.sleep(0.1)
+        self.set_shape(self.Shape.F_RAMP)
+
+    def ramp_setup_v(self, start_volt: float, end_volt: float, step_time: float, step: float, repeat: bool = False):
+        """
+        Set up the function generator for a voltage ramp
+        :param start_volt: start voltage in V
+        :param end_volt: end voltage in V
+        :param step_time: time in seconds between steps
+        :param step: step size in V
+        :param repeat: whether to repeat the ramp
+        """
+        self.set_parameter(0x100, 0x0d, round(start_volt * 1e3), 4)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x0e, round(end_volt * 1e3), 4)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x0f, round(step_time * 1000), 4)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x10, round(step * 1e3), 4)
+        time.sleep(0.1)
+        self.set_parameter(0x100, 0x14, int(repeat), 1)
         time.sleep(0.1)
         self.set_parameter(0x100, 0x04, 3, 1)
 

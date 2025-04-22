@@ -112,7 +112,7 @@ class FunctionGenerator(ABC):
             self._set_output_state(state, channel)
 
     @abstractmethod
-    def ramp_setup(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
+    def ramp_setup_f(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
         """
         Set up the function generator for a frequency ramp
         :param start_freq: start frequency in Hz
