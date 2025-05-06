@@ -20,6 +20,20 @@ SERIAL_TIMEOUT = 1
 BASE_ADDR = 0x100
 SENSOR_ADDR = 0x101
 
+FREQ_MAX = 999999
+FREQ_MIN = 0.1
+
+AMP_MAX = 20
+AMP_MIN = 0
+
+OFF_MAX = 10
+OFF_MIN = -10
+
+RAMP_PAUSE_MAX = 9.999
+RAMP_PAUSE_MIN = 0.01
+
+RAMP_VSTEP_MAX = 10000
+RAMP_VSTEP_MIN = 1
 
 class FunctionGenerator_Phywe(FunctionGenerator):
     def __init__(self, port: str, log: bool = False, verbose: bool = False):
@@ -134,6 +148,9 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         if channel is not None and channel != 1:
             raise NotImplementedError("This function generator does not have multiple channels")
 
+        if frequency > FREQ_MAX or frequency < FREQ_MIN:
+            raise ValueError(f"Frequency must be between {FREQ_MIN} Hz and {FREQ_MAX} Hz")
+
         self.set_parameter(BASE_ADDR, BaseParameters.FREQUENCY, round(frequency * 10))
         self.confirm()
 
@@ -146,6 +163,9 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         if channel is not None and channel != 1:
             raise NotImplementedError("This function generator does not have multiple channels")
 
+        if amplitude < AMP_MIN or amplitude > AMP_MAX:
+            raise ValueError(f"Amplitude must be between {AMP_MIN} V and {AMP_MAX} V")
+
         self.set_parameter(BASE_ADDR, BaseParameters.AMPLITUDE, round(amplitude * 1000))
         self.confirm()
 
@@ -157,6 +177,9 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         """
         if channel is not None and channel != 1:
             raise NotImplementedError("This function generator does not have multiple channels")
+
+        if offset < OFF_MIN or offset > OFF_MAX:
+            raise ValueError(f"Offset must be between {OFF_MIN} V and {OFF_MAX} V")
 
         self.set_parameter(BASE_ADDR, BaseParameters.OFFSET, round(offset * 1000))
         self.confirm()
@@ -202,6 +225,16 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         :param step: step size in Hz
         :param repeat: whether to repeat the ramp
         """
+        if start_freq < FREQ_MIN or start_freq > FREQ_MAX:
+            raise ValueError(f"Frequency must be between {FREQ_MIN} Hz and {FREQ_MAX} Hz")
+        if end_freq < FREQ_MIN or end_freq > FREQ_MAX:
+            raise ValueError(f"Frequency must be between {FREQ_MIN} Hz and {FREQ_MAX} Hz")
+        if step < FREQ_MIN or step > FREQ_MAX:
+            raise ValueError(f"Frequency must be between {FREQ_MIN} Hz and {FREQ_MAX} Hz")
+
+        if step_time < RAMP_PAUSE_MIN or step_time > RAMP_PAUSE_MAX:
+            raise ValueError(f"Step time must be between {RAMP_PAUSE_MIN} ms and {RAMP_PAUSE_MAX} ms")
+
         self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_START, round(start_freq * 10))
         self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_STOP, round(end_freq * 10))
         self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_PAUSE, round(step_time * 1000))
@@ -218,6 +251,18 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         :param step: step size in V
         :param repeat: whether to repeat the ramp
         """
+
+        if start_volt < OFF_MIN or start_volt > OFF_MAX:
+            raise ValueError(f"Offset must be between {OFF_MIN} V and {OFF_MAX} V")
+        if end_volt < OFF_MIN or end_volt > OFF_MAX:
+            raise ValueError(f"Offset must be between {OFF_MIN} V and {OFF_MAX} V")
+
+        if step < RAMP_VSTEP_MIN or step > RAMP_VSTEP_MAX:
+            raise ValueError(f"Voltage step must be between {RAMP_VSTEP_MIN} mV and {RAMP_VSTEP_MAX} mV")
+
+        if step_time < RAMP_PAUSE_MIN or step_time > RAMP_PAUSE_MAX:
+            raise ValueError(f"Step time must be between {RAMP_PAUSE_MIN} ms and {RAMP_PAUSE_MAX} ms")
+
         self.set_parameter(BASE_ADDR, BaseParameters.V_RAMP_START, round(start_volt * 1e3))
         self.set_parameter(BASE_ADDR, BaseParameters.V_RAMP_STOP, round(end_volt * 1e3))
         self.set_parameter(BASE_ADDR, BaseParameters.V_RAMP_PAUSE, round(step_time * 1000))
