@@ -3,9 +3,9 @@ import logging
 
 import serial
 from serial.serialutil import SerialException
-from enum import Enum
 
 from .function_generator import FunctionGenerator
+from .command_values import FrameType, BaseParameters, SensorParameters, SignalShape
 
 START_BYTE = bytearray([0x7D])
 STOP_BYTE = bytearray([0x7E])
@@ -13,6 +13,12 @@ STOP_BYTE = bytearray([0x7E])
 BAUD_RATE = 921600
 
 RETRIES = 2
+
+SEND_PAUSE = 0.2
+SERIAL_TIMEOUT = 1
+
+BASE_ADDR = 0x100
+SENSOR_ADDR = 0x101
 
 
 class FunctionGenerator_Phywe(FunctionGenerator):
@@ -23,8 +29,8 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         :param log: whether to log the communication
         """
         self.port = port
-        self.interface = serial.Serial(port, BAUD_RATE, timeout=1)
-        self.interface.flushInput()
+        self.interface = serial.Serial(port, BAUD_RATE, timeout=SERIAL_TIMEOUT)
+        self.interface.reset_input_buffer()
         self.verbose = verbose
         self.log = log
         self.send_timestamp = time.time()
@@ -45,13 +51,12 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         if self.interface.is_open:
             self.interface.close()
 
-    def _send(self, frame_index, address, data, num_bytes):
+    def _send(self, frame_index: FrameType, address: int, data: bytes):
         # wait until at least 0.2 seconds have passed since the last send
-        time.sleep(max(0.0, 0.2 - (time.time() - self.send_timestamp)))
-        data_bytes = data.to_bytes(num_bytes, "little")
+        time.sleep(max(0.0, SEND_PAUSE - (time.time() - self.send_timestamp)))
         address_bytes = address.to_bytes(2, "little")
-        frame_bytes = frame_index.to_bytes(1, "little")
-        frame = frame_bytes + address_bytes + data_bytes
+        frame_bytes = frame_index.value.to_bytes(1, "little")
+        frame = frame_bytes + address_bytes + data
         length = len(frame)
         frame = bytearray([length]) + frame
         if self.log:
@@ -61,11 +66,11 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         self.interface.write(START_BYTE + frame + STOP_BYTE)
         self.send_timestamp = time.time()
 
-    def _send_with_ack(self, frame_index, address, data, num_bytes, tries):
+    def _send_with_ack(self, frame_index: FrameType, address: int, data: bytes, tries):
         failed_tries = 0
         while failed_tries < tries:
             try:
-                self._send(frame_index, address, data, num_bytes)
+                self._send(frame_index, address, data)
                 response = self._receive()
                 if self.verbose:
                     print(response.hex())
@@ -74,8 +79,8 @@ class FunctionGenerator_Phywe(FunctionGenerator):
                 self.interface.close()
                 logging.error("Failed to send data to function generator")
                 input("Restart the function generator, then press enter\a")
-                self.interface = serial.Serial(self.port, BAUD_RATE, timeout=1)
-                self.interface.flushInput()
+                self.interface = serial.Serial(self.port, BAUD_RATE, timeout=SERIAL_TIMEOUT)
+                self.interface.reset_input_buffer()
                 failed_tries += 1
         if failed_tries >= tries:
             raise SerialException
@@ -91,105 +96,102 @@ class FunctionGenerator_Phywe(FunctionGenerator):
             logging.debug(f"Rx: {response_header.hex() + response_data.hex()}")
         return response_data
 
-    def set_parameter(self, address: int, parameter: int, value: int, num_bytes: int):
+    def set_parameter(self, address: int, parameter: BaseParameters | SensorParameters, value: int):
         """
         Set a single parameter - changes aren't applied until confirm() is called
         :param address: address of the device
         :param parameter: address of the parameter
         :param value: new value of the parameter
-        :param num_bytes: length of the parameter in bytes
         """
-        data = parameter + value * (2 ** 8)
-        self._send_with_ack(0x11, address, data, num_bytes + 1, RETRIES)
+        data = parameter.value.index.to_bytes(1) + value.to_bytes(parameter.value.num_bytes, "little", signed=True)
+        self._send_with_ack(FrameType.WRITE_CONFIG, address, data, RETRIES)
 
     def confirm(self):
         """
         Apply previous changes to parameters
         """
-        self._send_with_ack(0x4f, 0x100, 0, 0, RETRIES)
+        self._send_with_ack(FrameType.APPLY_VALUES, BASE_ADDR, b"", RETRIES)
 
-    def get_parameter(self, address: int, parameter: int) -> int:
+    def get_parameter(self, address: int, parameter: BaseParameters | SensorParameters) -> int:
         """
         Returns the set value of a parameter
         :param address: address of the device
         :param parameter: address of the parameter
         :return: current value of the parameter
         """
-        self.interface.flushInput()
-        self._send(0x12, address, parameter, 1)
+        self.interface.reset_input_buffer()
+        self._send(FrameType.READ_CONFIG, address, parameter.value.index.to_bytes())
         response = self._receive()[4:]
         return int.from_bytes(response, "little")
 
-    def _set_frequency(self, frequency: float):
+    def _set_frequency(self, frequency: float, channel=None, **kwargs):
         """
         Set the frequency of the output
         :param frequency: frequency in Hz
+        :param channel: included for compatibility, should not be used
         """
-        self.set_parameter(0x100, 0x05, round(frequency * 10), 4)
-        time.sleep(0.05)
+
+        if channel is not None and channel != 1:
+            raise NotImplementedError("This function generator does not have multiple channels")
+
+        self.set_parameter(BASE_ADDR, BaseParameters.FREQUENCY, round(frequency * 10))
         self.confirm()
 
-    def _set_amplitude(self, amplitude: float, **kwargs):
+    def _set_amplitude(self, amplitude: float, channel=None, **kwargs):
         """
         Set the amplitude of the output
         :param amplitude: amplitude in V for power output, 100 mV for Headphones
+        :param channel: included for compatibility, should not be used
         """
-        if "channel" in kwargs and kwargs["channel"] != 1:
+        if channel is not None and channel != 1:
             raise NotImplementedError("This function generator does not have multiple channels")
 
-        self.set_parameter(0x100, 0x06, round(amplitude * 1000), 4)
-        time.sleep(0.05)
+        self.set_parameter(BASE_ADDR, BaseParameters.AMPLITUDE, round(amplitude * 1000))
         self.confirm()
 
-    def _set_offset(self, offset: float, **kwargs):
+    def _set_offset(self, offset: float, channel=None, **kwargs):
         """
         Set the offset of the output
         :param offset: offset in V
+        :param channel: included for compatibility, should not be used
         """
-        if "channel" in kwargs and kwargs["channel"] != 1:
+        if channel is not None and channel != 1:
             raise NotImplementedError("This function generator does not have multiple channels")
 
-        self.set_parameter(0x100, 0x07, round(offset * 1000), 2)
-        time.sleep(0.05)
+        self.set_parameter(BASE_ADDR, BaseParameters.OFFSET, round(offset * 1000))
         self.confirm()
 
-    def _set_output_state(self, state: bool, **kwargs):
+    def _set_output_state(self, state: bool, channel=None, **kwargs):
         """
         Set the output state of the function generator
         :param state: output state: True - on, False - off
+        :param channel: included for compatibility, should not be used
         """
-        if "channel" in kwargs and kwargs["channel"] != 1:
+        if channel is not None and channel != 1:
             raise NotImplementedError("This function generator does not have multiple channels")
 
-        self.set_parameter(0x100, 0x03, int(not state), 1)
+        self.set_parameter(BASE_ADDR, BaseParameters.OUTPUT_MODE, int(not state))
 
     def get_frequency(self):
         """
         Get the frequency of the output
         :return: frequency in Hz
         """
-        return self.get_parameter(0x100, 0x05) / 10
+        return self.get_parameter(BASE_ADDR, BaseParameters.FREQUENCY) / 10
 
     def get_amplitude(self):
         """
         Get the amplitude of the output
         :return: amplitude in V for power output, 100 mV for Headphones
         """
-        return self.get_parameter(0x100, 0x06) / 1000
+        return self.get_parameter(BASE_ADDR, BaseParameters.AMPLITUDE) / 1000
 
-    class Shape(Enum):
-        SINE = 1
-        TRIANGLE = 2
-        SQUARE = 3
-        F_RAMP = 4
-        U_Ramp = 5
-
-    def set_shape(self, shape: Shape):
+    def set_shape(self, shape: SignalShape):
         """
         Set the output shape of the function generator
         :param shape: output shape
         """
-        self.set_parameter(0x100, 0x04, shape.value, 1)
+        self.set_parameter(BASE_ADDR, BaseParameters.SIGNAL_SHAPE, shape.value)
 
     def ramp_setup_f(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
         """
@@ -200,17 +202,12 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         :param step: step size in Hz
         :param repeat: whether to repeat the ramp
         """
-        self.set_parameter(0x100, 0x08, round(start_freq * 10), 4)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x09, round(end_freq * 10), 4)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x0a, round(step_time * 1000), 4)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x0b, round(step * 10), 4)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x13, int(repeat), 1)
-        time.sleep(0.1)
-        self.set_shape(self.Shape.F_RAMP)
+        self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_START, round(start_freq * 10))
+        self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_STOP, round(end_freq * 10))
+        self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_PAUSE, round(step_time * 1000))
+        self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_STEP, round(step * 10))
+        self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_REPEAT, int(repeat))
+        self.set_shape(SignalShape.F_RAMP)
 
     def ramp_setup_v(self, start_volt: float, end_volt: float, step_time: float, step: float, repeat: bool = False):
         """
@@ -221,35 +218,30 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         :param step: step size in V
         :param repeat: whether to repeat the ramp
         """
-        self.set_parameter(0x100, 0x0d, round(start_volt * 1e3), 4)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x0e, round(end_volt * 1e3), 4)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x0f, round(step_time * 1000), 4)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x10, round(step * 1e3), 4)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x14, int(repeat), 1)
-        time.sleep(0.1)
-        self.set_parameter(0x100, 0x04, 3, 1)
+        self.set_parameter(BASE_ADDR, BaseParameters.V_RAMP_START, round(start_volt * 1e3))
+        self.set_parameter(BASE_ADDR, BaseParameters.V_RAMP_STOP, round(end_volt * 1e3))
+        self.set_parameter(BASE_ADDR, BaseParameters.V_RAMP_PAUSE, round(step_time * 1000))
+        self.set_parameter(BASE_ADDR, BaseParameters.V_RAMP_STEP, round(step * 1e3))
+        self.set_parameter(BASE_ADDR, BaseParameters.V_RAMP_REPEAT, int(repeat))
+        self.set_shape(SignalShape.V_RAMP)
 
     def ramp_start(self):
         """
         Start the frequency ramp
         """
-        self._send_with_ack(0x51, 0x100, 0, 0, RETRIES)
+        self._send_with_ack(FrameType.RAMP_START, BASE_ADDR, b"", RETRIES)
 
     def ramp_stop(self):
         """
         Stop the frequency ramp
         """
-        self._send_with_ack(0x52, 0x100, 0, 0, RETRIES)
+        self._send_with_ack(FrameType.RAMP_STOP, BASE_ADDR, b"", RETRIES)
 
     def ramp_duration(self):
         """
         Get the duration of the frequency ramp
         """
-        return self.get_parameter(0x100, 0x11) / 1000
+        return self.get_parameter(BASE_ADDR, BaseParameters.F_RAMP_DURATION) / 1000
 
 
 if __name__ == "__main__":

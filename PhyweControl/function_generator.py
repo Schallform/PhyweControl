@@ -32,9 +32,9 @@ class FunctionGenerator(ABC):
         """
         try:
             for i in range(len(frequency)):
-                self._set_frequency(frequency[i], i + 1)
+                self._set_frequency(frequency[i], channel=i + 1)
         except TypeError:
-            self._set_frequency(frequency, channel)
+            self._set_frequency(frequency, channel=channel)
 
     @abstractmethod
     def _set_amplitude(self, amplitude: float, channel: int = 1):

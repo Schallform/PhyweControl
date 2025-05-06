@@ -1,4 +1,3 @@
-import pytest
+from PhyweControl.command_values import *
 
-def test_placeholder():
-    pass
+print(BaseParameters.HW_VERSION.HW_VERSION.value.num_bytes)
