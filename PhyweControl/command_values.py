@@ -1,7 +1,15 @@
+"""
+Enums with the command values for the function generator
+DM - 05/2025
+"""
+
 from enum import Enum
 
 
 class FrameType(Enum):
+    """
+    Communication frame types as defined on page 5 of the interface description
+    """
     DATA_READ = 0x01
     DATA_RESPONSE_A = 0x0A
     DATA_RESPONSE_B = 0x0B
@@ -21,11 +29,17 @@ class FrameType(Enum):
     RAMP_STOP = 0x52
 
 class Parameter:
+    """
+    Parameter class including parameter index and length
+    """
     def __init__(self, index:int, num_bytes:int):
         self.index = index
         self.num_bytes = num_bytes
 
 class BaseParameters(Enum):
+    """
+    Parameters of the base device (address 0x100)
+    """
     HW_VERSION = Parameter(0x00, 1)
     FW_VERSION = Parameter(0x01, 2)
     DEVICE_CLASS = Parameter(0x02, 1)
@@ -49,9 +63,15 @@ class BaseParameters(Enum):
     V_RAMP_REPEAT = Parameter(0x14, 1)
 
 class SensorParameters(Enum):
+    """
+    Parameters of the virtual sensor unit (address 0x101)
+    """
     EEPROM_WRITTEN = Parameter(0x00, 1)
 
 class SignalShape(Enum):
+    """
+    Signal shapes/modes
+    """
     SINE = 0
     TRIANGLE = 1
     SQUARE = 2
