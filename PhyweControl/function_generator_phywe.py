@@ -32,8 +32,9 @@ OFF_MIN = -10
 RAMP_PAUSE_MAX = 9.999
 RAMP_PAUSE_MIN = 0.01
 
-RAMP_VSTEP_MAX = 10000
-RAMP_VSTEP_MIN = 1
+RAMP_VSTEP_MAX = 10
+RAMP_VSTEP_MIN = 0.001
+
 
 class FunctionGenerator_Phywe(FunctionGenerator):
     def __init__(self, port: str, log: bool = False, verbose: bool = False):
@@ -216,7 +217,8 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         """
         self.set_parameter(BASE_ADDR, BaseParameters.SIGNAL_SHAPE, shape.value)
 
-    def ramp_setup_f(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False):
+    def ramp_setup_f(self, start_freq: float, end_freq: float, step_time: float, step: float, repeat: bool = False,
+                     shape: SignalShape = SignalShape.SINE):
         """
         Set up the function generator for a frequency ramp
         :param start_freq: start frequency in Hz
@@ -235,12 +237,17 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         if step_time < RAMP_PAUSE_MIN or step_time > RAMP_PAUSE_MAX:
             raise ValueError(f"Step time must be between {RAMP_PAUSE_MIN} ms and {RAMP_PAUSE_MAX} ms")
 
+        if shape == SignalShape.F_RAMP or shape == SignalShape.V_RAMP:
+            raise ValueError("Signal shape can't be a ramp type")
+
         self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_START, round(start_freq * 10))
         self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_STOP, round(end_freq * 10))
         self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_PAUSE, round(step_time * 1000))
         self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_STEP, round(step * 10))
         self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_REPEAT, int(repeat))
+        self.set_parameter(BASE_ADDR, BaseParameters.F_RAMP_SHAPE, shape.value)
         self.set_shape(SignalShape.F_RAMP)
+        self.confirm()
 
     def ramp_setup_v(self, start_volt: float, end_volt: float, step_time: float, step: float, repeat: bool = False):
         """
