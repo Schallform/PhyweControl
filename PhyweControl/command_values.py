@@ -28,13 +28,16 @@ class FrameType(Enum):
     RAMP_START = 0x51
     RAMP_STOP = 0x52
 
+
 class Parameter:
     """
     Parameter class including parameter index and length
     """
-    def __init__(self, index:int, num_bytes:int):
+
+    def __init__(self, index: int, num_bytes: int):
         self.index = index
         self.num_bytes = num_bytes
+
 
 class BaseParameters(Enum):
     """
@@ -62,11 +65,27 @@ class BaseParameters(Enum):
     F_RAMP_REPEAT = Parameter(0x13, 1)
     V_RAMP_REPEAT = Parameter(0x14, 1)
 
+
 class SensorParameters(Enum):
     """
     Parameters of the virtual sensor unit (address 0x101)
     """
     EEPROM_WRITTEN = Parameter(0x00, 1)
+    SENSOR_ID = Parameter(0x01, 1)
+    SERIAL_NUM = Parameter(0x02, 4)
+    VENDOR_ID = Parameter(0x04, 1)
+    DATA_RATE_MAX = Parameter(0x05, 4)
+    DATA_RATE_TYP = Parameter(0x06, 4)
+    SENSOR_CHANNEL_BITMASK = Parameter(0x07, 1)
+    BURST_CHANNEL_BITMASK = Parameter(0x08, 1)
+    CALIBRATION_ALLOWED = Parameter(0x09, 1)
+    SAMPLE_UNIT = Parameter(0x0a, 1)
+    REVISION = Parameter(0x0b, 1)
+    WARM_UP_TIME = Parameter(0x0c, 1)
+    EQUATION_TYPE = Parameter(0x0d, 1)
+    CALIBRATION_PAGE_NUM = Parameter(0x0e, 1)
+    CALIBRATION_PAGE_CURRENT = Parameter(0x0f, 1)
+
 
 class SignalShape(Enum):
     """
