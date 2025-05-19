@@ -226,6 +226,7 @@ class FunctionGenerator_Phywe(FunctionGenerator):
         :param step_time: time in seconds between steps
         :param step: step size in Hz
         :param repeat: whether to repeat the ramp
+        :param shape: signal shape
         """
         if start_freq < FREQ_MIN or start_freq > FREQ_MAX:
             raise ValueError(f"Frequency must be between {FREQ_MIN} Hz and {FREQ_MAX} Hz")
