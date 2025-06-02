@@ -26,3 +26,6 @@ Add the file ``/etc/udev/rules.d/99-phywe.rules``:
 
     ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="a303", RUN+="/sbin/modprobe ftdi_sio" RUN+="/bin/sh -c 'echo 0403 a303 > /sys/bus/usb-serial/drivers/ftdi_sio/new_id'"
 
+## Third-Party Content
+The device drivers and interface docs in this repository are authored by PHYWE Systeme GmbH & Co. KG 
+and are used with permission. All rights remain with the original authors.
