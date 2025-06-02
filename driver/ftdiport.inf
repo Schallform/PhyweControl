@@ -1,10 +1,9 @@
-; FTDIPORT.INF
-; 
-; Copyright © 2000-2021 Future Technology Devices International Limited
+; FTDIPORT.INF generated using 'FT INF Generator' for Phywe Systeme GmbH&Co.KG
 ;
-; USB serial port driver installation file for Windows 7, Windows 8, Windows 8.1, Windows 10,
-; Server 2008 R2, Server 2012 R2 and Server 2016.
-
+; Copyright (c) 2000-2014 Future Technology Devices International Limited
+;
+; USB serial port driver installation file for Windows 2000, XP, Server 2003, Vista, Server 2008,
+; Windows 7, Server 2008 R2, Windows 8, Windows 8.1 and Server 2012 R2.
 ; 
 ; 
 ; IMPORTANT NOTICE: PLEASE READ CAREFULLY BEFORE INSTALLING THE RELEVANT 
@@ -225,7 +224,8 @@ Class=Ports
 ClassGUID={4d36e978-e325-11ce-bfc1-08002be10318}
 Provider=%FTDI%
 CatalogFile=ftdiport.cat
-DriverVer=06/10/2021,2.12.36.2
+DriverVer=10/28/2024,2.12.36.20
+PnpLockDown=1
 
 [SourceDisksNames]
 1=%DriversDisk%,,,
@@ -249,9 +249,9 @@ FtdiPort.NT.CopyCoInst=10,system32
 ExcludeFromSelect=*
 
 [Manufacturer]
-%FTDI%=FtdiHw,NTamd64
+%FTDI%=FtdiHw,NTx86,NTamd64
 
-[FtdiHw]
+[FtdiHw.NTx86]
 %VID_0403&PID_D090.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_D090   ;VKA
 %VID_0403&PID_D091.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_D091   ;Step Motor
 %VID_0403&PID_D092.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_D092   ;Basic-Unit USB
@@ -266,16 +266,16 @@ ExcludeFromSelect=*
 %VID_0403&PID_A303.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_A303   ;Digital Function Generator
 %VID_0403&PID_A304.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_A304   ;X-Ray
 %VID_0403&PID_A305.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_A305   ;Cobra4 Xpert-Link
-%VID_0403&PID_A306.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_A306   ;Cobra4 Xpert Connect
-%VID_0403&PID_A307.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_A307   ;Cobra4 USB-Link 2
+%VID_0403&PID_A306.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_A306   ;Phywe General Device 2
+%VID_0403&PID_A307.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_A307   ;Phywe General Device 3
 %VID_0403&PID_7FC0.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC0   ;DC Amplifier
 %VID_0403&PID_7FC1.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC1   ;Goniometer
 %VID_0403&PID_7FC2.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC2   ;Cobra4 Universal Demo Interface
 %VID_0403&PID_7FC3.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC3   ;cobra4 Mobile-Link 2
-%VID_0403&PID_7FC4.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC4   ;cobra4 Signal-Link
-%VID_0403&PID_7FC5.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC5   ;cobra4 Wireless-Link 2
+%VID_0403&PID_7FC4.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC4   ;cobra4 Hall-effect-uni
+%VID_0403&PID_7FC5.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC5   ;Phywe General Device 4
 %VID_0403&PID_7FC6.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC6   ;Cobra4 Sensor-Adapter
-%VID_0403&PID_7FC7.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC7   ;Phywe General Device 4
+%VID_0403&PID_7FC7.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_7FC7   ;cobra4 Wireless-Link 2
 
 [FtdiHw.NTamd64]
 %VID_0403&PID_D090.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_D090   ;VKA
@@ -292,16 +292,16 @@ ExcludeFromSelect=*
 %VID_0403&PID_A303.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_A303   ;Digital Function Generator
 %VID_0403&PID_A304.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_A304   ;X-Ray
 %VID_0403&PID_A305.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_A305   ;Cobra4 Xpert-Link
-%VID_0403&PID_A306.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_A306   ;Cobra4 Xpert Connect
-%VID_0403&PID_A307.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_A307   ;Cobra4 USB-Link 2
+%VID_0403&PID_A306.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_A306   ;Phywe General Device 2
+%VID_0403&PID_A307.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_A307   ;Phywe General Device 3
 %VID_0403&PID_7FC0.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC0   ;DC Amplifier
 %VID_0403&PID_7FC1.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC1   ;Goniometer
 %VID_0403&PID_7FC2.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC2   ;Cobra4 Universal Demo Interface
 %VID_0403&PID_7FC3.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC3   ;cobra4 Mobile-Link 2
-%VID_0403&PID_7FC4.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC4   ;cobra4 Signal-Link
-%VID_0403&PID_7FC5.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC5   ;cobra4 Wireless-Link 2
+%VID_0403&PID_7FC4.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC4   ;cobra4 Hall-effect-uni
+%VID_0403&PID_7FC5.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC5   ;Phywe General Device 4
 %VID_0403&PID_7FC6.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC6   ;Cobra4 Sensor-Adapter
-%VID_0403&PID_7FC7.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC7   ;Phywe General Device 4
+%VID_0403&PID_7FC7.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_7FC7   ;cobra4 Wireless-Link 2
 
 [FtdiPort.NT.AddService]
 DisplayName    = %SvcDesc%
@@ -313,13 +313,13 @@ LoadOrderGroup = Base
 
 
 ; -------------- Serenum Driver install section
-[SerEnum_AddService]
-DisplayName    = %SerEnum.SvcDesc%
-ServiceType    = 1 ; SERVICE_KERNEL_DRIVER
-StartType      = 3 ; SERVICE_DEMAND_START
-ErrorControl   = 1 ; SERVICE_ERROR_NORMAL
-ServiceBinary  = %12%\serenum.sys
-LoadOrderGroup = PNP Filter
+;[SerEnum_AddService]
+;DisplayName    = %SerEnum.SvcDesc%
+;ServiceType    = 1 ; SERVICE_KERNEL_DRIVER
+;StartType      = 3 ; SERVICE_DEMAND_START
+;ErrorControl   = 1 ; SERVICE_ERROR_NORMAL
+;ServiceBinary  = %12%\serenum.sys
+;LoadOrderGroup = PNP Filter
 
 [FtdiPort.NT.AddReg]
 HKR,,EnumPropPages32,,"ftserui2.dll,SerialPortPropPageProvider"
@@ -350,21 +350,23 @@ AddReg=FtdiPort.NT.HW.AddReg
 
 [FtdiPort.NT.Services]
 AddService = FTSER2K, 0x00000002, FtdiPort.NT.AddService
-AddService = Serenum,,SerEnum_AddService
-DelService = FTSERIAL
+;AddService = Serenum,,SerEnum_AddService
+;DelService = FTSERIAL
 
 [FtdiPort.NTamd64.Services]
 AddService = FTSER2K, 0x00000002, FtdiPort.NT.AddService
-AddService = Serenum,,SerEnum_AddService
-DelService = FTSERIAL
+;AddService = Serenum,,SerEnum_AddService
+;DelService = FTSERIAL
 
 
 [FtdiPort.NT.HW.AddReg]
-HKR,,"UpperFilters",0x00010000,"serenum"
-HKR,,"ConfigData",1,11,00,3F,3F,10,27,00,00,88,13,00,00,C4,09,00,00,E2,04,00,00,71,02,00,00,38,41,00,00,9C,80,00,00,4E,C0,00,00,34,00,00,00,1A,00,00,00,0D,00,00,00,06,40,00,00,03,80,00,00,00,00,00,00,D0,80,00,00
+;HKR,,"UpperFilters",0x00010000,"serenum"
+HKR,,"ConfigData",1,11,08,3F,3F,10,27,00,00,88,13,00,00,C4,09,00,00,E2,04,00,00,71,02,00,00,38,41,00,00,9C,80,00,00,4E,C0,00,00,34,00,00,00,1A,00,00,00,0D,00,00,00,06,40,00,00,03,80,00,00,00,00,00,00,D0,80,00,00
 HKR,,"MinReadTimeout",0x00010001,0
 HKR,,"MinWriteTimeout",0x00010001,0
 HKR,,"LatencyTimer",0x00010001,16
+HKR,,"InPriorityLevel",0x00010001,8 
+HKR,,"OutPriorityLevel",0x00010001,8
 
 
 [FtdiPort.NT.CoInstallers]
@@ -376,13 +378,12 @@ AddReg=FtdiPort.NT.CoInstallers.AddReg
 CopyFiles=FtdiPort.NT.CopyCoInst
 
 [FtdiPort.NT.CoInstallers.AddReg]
-HKR,,CoInstallers32,0x00010000,"ftcserco.Dll,FTCSERCoInstaller"
-
+HKR,,CoInstallers64,0x00010000,"ftcserco.Dll,FTCSERCoInstaller"
 
 ;---------------------------------------------------------------;
 
 [Strings]
-FTDI="PHYWE"
+FTDI="Phywe Systeme GmbH&Co.KG"
 DESC="PHYWE Driver Package"
 DriversDisk="Phywe measure"
 PortsClassName = "Ports (COM & LPT)"
@@ -400,16 +401,17 @@ VID_0403&PID_A302.DeviceDesc="Speed of Light Meter"
 VID_0403&PID_A303.DeviceDesc="Digital Function Generator"
 VID_0403&PID_A304.DeviceDesc="X-Ray"
 VID_0403&PID_A305.DeviceDesc="Cobra4 Xpert-Link"
-VID_0403&PID_A306.DeviceDesc="Cobra4 Xpert Connect"
-VID_0403&PID_A307.DeviceDesc="Cobra4 USB-Link 2"
+VID_0403&PID_A306.DeviceDesc="Phywe General Device 2"
+VID_0403&PID_A307.DeviceDesc="Phywe General Device 3"
 VID_0403&PID_7FC0.DeviceDesc="DC Amplifier"
 VID_0403&PID_7FC1.DeviceDesc="Goniometer"
 VID_0403&PID_7FC2.DeviceDesc="Cobra4 Universal Demo Interface"
 VID_0403&PID_7FC3.DeviceDesc="Cobra4 Mobile-Link 2"
-VID_0403&PID_7FC4.DeviceDesc="Cobra4 Signal-Link"
+VID_0403&PID_7FC4.DeviceDesc="Hall-effect unit"
 VID_0403&PID_7FC5.DeviceDesc="Phywe General Device 4"
 VID_0403&PID_7FC6.DeviceDesc="Cobra4 Sensor-Adapter"
 VID_0403&PID_7FC7.DeviceDesc="Cobra4 Wireless-Link 2"
 SvcDesc="USB Serial Port Driver"
 SerEnum.SvcDesc="Serenum Filter Driver"
+
 

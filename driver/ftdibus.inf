@@ -1,9 +1,9 @@
-; FTDIBUS.INF
+; FTDIBUS.INF generated using 'FT INF Generator' for Phywe Systeme GmbH&Co.KG
 ; 
-; Copyright © 2000-2021 Future Technology Devices International Limited
+; Copyright (c) 2000-2014 Future Technology Devices International Limited
 ; 
-; USB serial converter driver installation file for Windows 7, Windows 8, Windows 8.1, Windows 10,
-; Server 2008 R2, Server 2012 R2 and Server 2016.
+; USB serial converter driver installation file for Windows 2000, XP, Server 2003, Vista, Server 2008,
+; Windows 7, Server 2008 R2, Windows 8, Windows 8.1 and Server 2012 R2.
 ; 
 ; 
 ; IMPORTANT NOTICE: PLEASE READ CAREFULLY BEFORE INSTALLING THE RELEVANT 
@@ -223,7 +223,8 @@ Class=USB
 ClassGUID={36fc9e60-c465-11cf-8056-444553540000}
 Provider=%FTDI%
 CatalogFile=ftdibus.cat
-DriverVer=06/10/2021,2.12.36.2
+PnpLockdown=1
+DriverVer=11/09/2024,2.12.36.5
 
 [SourceDisksNames]
 1=%DriversDisk%,,,
@@ -248,10 +249,11 @@ FtdiBus.NTamd64.Copy = 10,system32\drivers
 FtdiBus.NTamd64.Copy2 = 10,system32
 FtdiBus.NTamd64.Copy3 = 10,syswow64
 
-[Manufacturer]
-%Ftdi%=FtdiHw,NTamd64
 
-[FtdiHw]
+[Manufacturer]
+%Ftdi%=FtdiHw,,NTx86,NTamd64
+
+[FtdiHw.NTx86]
 %USB\VID_0403&PID_D090.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_D090   ;VKA
 %USB\VID_0403&PID_D091.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_D091   ;Step Motor
 %USB\VID_0403&PID_D092.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_D092   ;Basic-Unit USB
@@ -266,16 +268,16 @@ FtdiBus.NTamd64.Copy3 = 10,syswow64
 %USB\VID_0403&PID_A303.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_A303   ;Digital Function Generator
 %USB\VID_0403&PID_A304.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_A304   ;X-Ray
 %USB\VID_0403&PID_A305.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_A305   ;Cobra4 Xpert-Link
-%USB\VID_0403&PID_A306.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_A306   ;Cobra4 Xpert Connect
-%USB\VID_0403&PID_A307.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_A307   ;Cobra4 USB-Link 2
+%USB\VID_0403&PID_A306.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_A306   ;Phywe General Device 2
+%USB\VID_0403&PID_A307.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_A307   ;Phywe General Device 3
 %USB\VID_0403&PID_7FC0.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC0   ;DC Amplifier
 %USB\VID_0403&PID_7FC1.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC1   ;Gonimeter
 %USB\VID_0403&PID_7FC2.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC2   ;Cobra4 Universal Demo Interface
-%USB\VID_0403&PID_7FC3.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC3   ;Cobra4 Mobile-Link 2
-%USB\VID_0403&PID_7FC4.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC4   ;Cobra4 Signal-Link
-%USB\VID_0403&PID_7FC5.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC5   ;Phywe General Device 4
+%USB\VID_0403&PID_7FC3.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC3   ;Phywe General Device 4
+%USB\VID_0403&PID_7FC4.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC4   ;Hall-effect unit
+%USB\VID_0403&PID_7FC5.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC5   ;Cobra4 Wireless-Link 2
 %USB\VID_0403&PID_7FC6.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC6   ;Cobra4 Sensor-Adapter
-%USB\VID_0403&PID_7FC7.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC7   ;Cobra4 Wireless-Link 2
+%USB\VID_0403&PID_7FC7.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_7FC7   ;Cobra4 Mobile-Link 2
 
 [FtdiHw.NTamd64]
 %USB\VID_0403&PID_D090.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_D090   ;VKA
@@ -292,16 +294,16 @@ FtdiBus.NTamd64.Copy3 = 10,syswow64
 %USB\VID_0403&PID_A303.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_A303   ;Digital Function Generator
 %USB\VID_0403&PID_A304.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_A304   ;X-Ray
 %USB\VID_0403&PID_A305.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_A305   ;Cobra4 Xpert-Link
-%USB\VID_0403&PID_A306.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_A306   ;Cobra4 Xpert Connect
-%USB\VID_0403&PID_A307.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_A307   ;Cobra4 USB-Link 2
+%USB\VID_0403&PID_A306.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_A306   ;Phywe General Device 2
+%USB\VID_0403&PID_A307.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_A307   ;Phywe General Device 3
 %USB\VID_0403&PID_7FC0.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC0   ;DC Amplifier
 %USB\VID_0403&PID_7FC1.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC1   ;Goniometer
 %USB\VID_0403&PID_7FC2.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC2   ;Cobra4 Universal Demo Interface
-%USB\VID_0403&PID_7FC3.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC3   ;cobra4 Mobile-Link 2
-%USB\VID_0403&PID_7FC4.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC4   ;cobra4 Signal-Link
-%USB\VID_0403&PID_7FC5.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC5   ;Phywe General Device 4
+%USB\VID_0403&PID_7FC3.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC3   ;Phywe General Device 4
+%USB\VID_0403&PID_7FC4.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC4   ;Hall-effect unit
+%USB\VID_0403&PID_7FC5.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC5   ;Cobra4 Wireless-Link 2
 %USB\VID_0403&PID_7FC6.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC6   ;Cobra4 Sensor-Adapter
-%USB\VID_0403&PID_7FC7.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC7   ;Cobra4 Wireless-Link 2
+%USB\VID_0403&PID_7FC7.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_7FC7   ;Cobra4 Mobile-Link 2
 
 [ControlFlags]
 ExcludeFromSelect=*
@@ -310,15 +312,21 @@ ExcludeFromSelect=*
 CopyFiles=FtdiBus.NT.Copy,FtdiBus.NT.Copy2
 AddReg=FtdiBus.NT.AddReg
 
+[FtdiBus.NT.HW]
+AddReg=FtdiBus.NT.HW.AddReg
+
 [FtdiBus.NTamd64]
 CopyFiles=FtdiBus.NTamd64.Copy,FtdiBus.NTamd64.Copy2,FtdiBus.NTamd64.Copy3
 AddReg=FtdiBus.NT.AddReg
 
+[FtdiBus.NTamd64.HW]
+AddReg=FtdiBus.NT.HW.AddReg
+
 [FtdiBus.NT.Services]
-AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService, FtdiBus.NT.EventLog_Inst
+AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService
 
 [FtdiBus.NTamd64.Services]
-AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService, FtdiBus.NT.EventLog_Inst
+AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService
 
 [FtdiBus.NT.AddService]
 DisplayName = %SvcDesc%
@@ -327,28 +335,19 @@ StartType = 3 ; SERVICE_DEMAND_START
 ErrorControl = 1 ; SERVICE_ERROR_NORMAL
 ServiceBinary = %10%\system32\drivers\ftdibus.sys
 LoadOrderGroup = Base
+AddReg = FtdiBus.NT.AddService.AddReg
 
 [FtdiBus.NT.AddReg]
 HKR,,DevLoader,,*ntkern
 HKR,,NTMPDriver,,ftdibus.sys
 HKR,,EnumPropPages32,,"ftbusui.dll,FTBUSUIPropPageProvider"
 
-[FtdiBus.NT.EventLog_Inst]
-AddReg = FtdiBus.NT.EventLog_Inst.AddReg
+[FtdiBus.NT.HW.AddReg]
+HKR,,"USBTimeout",0x00010001,5000
 
-[FtdiBus.NT.EventLog_Inst.AddReg]
-HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\ftdibus.sys"
-HKR,,TypesSupported,0x00010001,7
+[FtdiBus.NT.AddService.AddReg]
+HKR,Parameters,"RetryResetCount",0x10001,50
 
-[FtdiBus.NT.HW] 
-AddReg=FtdiBus.NT.HW.AddReg 
-
-[FtdiBus.NTamd64.HW] 
-AddReg=FtdiBus.NT.HW.AddReg 
-
-[FtdiBus.NT.HW.AddReg] 
-;HKR,,"ConfigData",0x00010001,0x00000012 
-   
 [FtdiBus.NT.Copy]
 ftdibus.sys
 
@@ -369,7 +368,7 @@ FTLang.dll
 ftd2xx.dll
 
 [Strings]
-Ftdi="PHYWE"
+Ftdi="Phywe Systeme GmbH&Co.KG"
 DESC="PHYWE Driver Package"
 DriversDisk="Phywe measure"
 USB\VID_0403&PID_D090.DeviceDesc="VKA"
@@ -386,16 +385,15 @@ USB\VID_0403&PID_A302.DeviceDesc="Speed of Light Meter"
 USB\VID_0403&PID_A303.DeviceDesc="Digital Function Generator"
 USB\VID_0403&PID_A304.DeviceDesc="X-Ray"
 USB\VID_0403&PID_A305.DeviceDesc="Cobra4 Xpert-Link"
-USB\VID_0403&PID_A306.DeviceDesc="Cobra4 Xpert Connect"
-USB\VID_0403&PID_A307.DeviceDesc="Cobra4 USB-Link 2"
+USB\VID_0403&PID_A306.DeviceDesc="Phywe General Device 2"
+USB\VID_0403&PID_A307.DeviceDesc="Phywe General Device 3"
 USB\VID_0403&PID_7FC0.DeviceDesc="DC Amplifier"
 USB\VID_0403&PID_7FC1.DeviceDesc="Goniometer"
 USB\VID_0403&PID_7FC2.DeviceDesc="Cobra4 Universal Demo Interface"
 USB\VID_0403&PID_7FC3.DeviceDesc="Cobra4 Mobile-Link 2"
-USB\VID_0403&PID_7FC4.DeviceDesc="Cobra4 Signal-Link"
+USB\VID_0403&PID_7FC4.DeviceDesc="Hall-effect unit"
 USB\VID_0403&PID_7FC5.DeviceDesc="Phywe General Device 4"
 USB\VID_0403&PID_7FC6.DeviceDesc="Cobra4 Sensor-Adapter"
 USB\VID_0403&PID_7FC7.DeviceDesc="Cobra4 Wireless-Link 2"
 SvcDesc="USB Serial Converter Driver"
 ClassName="USB"
-
