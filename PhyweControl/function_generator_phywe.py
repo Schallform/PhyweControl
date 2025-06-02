@@ -59,9 +59,6 @@ class FunctionGenerator_Phywe(FunctionGenerator_abc):
                 level=logging.DEBUG,
             )
 
-    def __del__(self):
-        self.release()
-
     def release(self):
         if self.interface.is_open:
             self.interface.close()
