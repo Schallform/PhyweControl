@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable
 
 
-class FunctionGenerator(ABC):
+class FunctionGenerator_abc(ABC):
     """
     Abstract function generator class
     """

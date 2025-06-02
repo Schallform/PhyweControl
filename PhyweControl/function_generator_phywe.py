@@ -4,7 +4,7 @@ import logging
 import serial
 from serial.serialutil import SerialException
 
-from .function_generator import FunctionGenerator
+from .function_generator import FunctionGenerator_abc
 from .command_values import FrameType, BaseParameters, SensorParameters, SignalShape
 
 START_BYTE = bytearray([0x7D])
@@ -36,7 +36,7 @@ RAMP_VSTEP_MAX = 10
 RAMP_VSTEP_MIN = 0.001
 
 
-class FunctionGenerator_Phywe(FunctionGenerator):
+class FunctionGenerator_Phywe(FunctionGenerator_abc):
     def __init__(self, port: str, log: bool = False, verbose: bool = False):
         """
         Initialize the object for control of a Phywe function generator
