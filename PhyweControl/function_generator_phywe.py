@@ -42,6 +42,7 @@ class FunctionGenerator_Phywe(FunctionGenerator_abc):
         Initialize the object for control of a Phywe function generator
         :param port: the COM port of the Phywe function generator
         :param log: whether to log the communication
+        :param verbose: whether to print the raw communication to the terminal
         """
         self.port = port
         self.interface = serial.Serial(port, BAUD_RATE, timeout=SERIAL_TIMEOUT)
