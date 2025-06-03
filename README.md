@@ -1,7 +1,16 @@
+# PhyweControl
+Python package for controlling the "Digital Function Generator" produced by PHYWE Systeme GmbH & Co. KG.
+
+## Installation 
+The package is included in the python packaging index and can be installed via ```pip```:
+
+    pip install phywecontrol
+
+
 ## Driver Installation
 ### Windows
 The function generator should show up as "Digital Function Generator" in the device manager. Select "Update Driver" 
-and point the installation wizard to the [driver](/driver) folder.
+and point the installation wizard to the [driver](https://github.com/Schallform/PhyweControl/tree/main/driver) folder.
 
 Open the device properties and enable "Load VCP" in the "Advanced" Tab. After unplugging and re-plugging, the function 
 generator shows up as COM Port in the device manager.
